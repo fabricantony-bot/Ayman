@@ -1,0 +1,7 @@
+{
+  "name": "AnfaGlobal - Premium Digital Marketing Agency",
+  "description": "Modern, high-conversion landing page for AnfaGlobal, a futuristic digital marketing agency specializing in growth, AI video ads, and performance marketing.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
