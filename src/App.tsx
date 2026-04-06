@@ -21,7 +21,9 @@ import {
   Zap,
   Rocket,
   Target,
-  BarChart3
+  BarChart3,
+  Menu,
+  X
 } from "lucide-react";
 
 const WHATSAPP_MESSAGE = encodeURIComponent("مرحبًا، رأيت موقعكم وأرغب في معرفة المزيد عن خدمات إنشاء المواقع وفيديوهات الذكاء الاصطناعي (UGC). هل يمكن إرسال التفاصيل والأسعار؟");
@@ -53,6 +55,7 @@ const IntroSplash = ({ onComplete }: { onComplete: () => void; key?: string }) =
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -61,53 +64,106 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  return (
-    <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className={`fixed top-6 left-1/2 -translate-x-1/2 z-40 w-[90%] max-w-5xl px-6 py-4 rounded-full transition-all duration-300 ${
-        isScrolled ? "glass shadow-lg" : "bg-transparent"
-      }`}
-    >
-      <div className="flex items-center justify-between">
-        <Link to="/" className="flex items-center">
-          <img 
-            src="https://i.postimg.cc/BZxDmKtF/Untitled-design-38.png" 
-            alt="AnfaGlobal Logo" 
-            className="h-10 w-auto"
-            referrerPolicy="no-referrer"
-          />
-        </Link>
-        
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium">
-          {[
-            { name: "Home", href: "/" },
-            { name: "Services", href: "/services" },
-            { name: "About Us", href: "/about" },
-            { name: "Contact Us", href: "/contact" }
-          ].map((item) => (
-            <Link 
-              key={item.name} 
-              to={item.href} 
-              className={`hover:text-accent transition-colors uppercase tracking-wider ${
-                location.pathname === item.href ? "text-accent font-bold" : ""
-              }`}
-            >
-              {item.name}
-            </Link>
-          ))}
-        </div>
+  // Close menu when route changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location]);
 
-        <a 
-          href={`https://wa.me/33644654541?text=${WHATSAPP_MESSAGE}`} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="bg-black text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-accent transition-all duration-300"
-        >
-          Free Business Audit
-        </a>
-      </div>
-    </motion.nav>
+  const navLinks = [
+    { name: "Home", href: "/" },
+    { name: "Services", href: "/services" },
+    { name: "About Us", href: "/about" },
+    { name: "Contact Us", href: "/contact" }
+  ];
+
+  return (
+    <>
+      <motion.nav
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className={`fixed top-6 left-1/2 -translate-x-1/2 z-40 w-[90%] max-w-5xl px-6 py-4 rounded-full transition-all duration-300 ${
+          isScrolled || isMobileMenuOpen ? "glass shadow-lg" : "bg-transparent"
+        }`}
+      >
+        <div className="flex items-center justify-between">
+          <Link to="/" className="flex items-center">
+            <img 
+              src="https://i.postimg.cc/BZxDmKtF/Untitled-design-38.png" 
+              alt="AnfaGlobal Logo" 
+              className="h-10 w-auto"
+              referrerPolicy="no-referrer"
+            />
+          </Link>
+          
+          <div className="hidden md:flex items-center gap-8 text-sm font-medium">
+            {navLinks.map((item) => (
+              <Link 
+                key={item.name} 
+                to={item.href} 
+                className={`hover:text-accent transition-colors uppercase tracking-wider ${
+                  location.pathname === item.href ? "text-accent font-bold" : ""
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-4">
+            <a 
+              href={`https://wa.me/33644654541?text=${WHATSAPP_MESSAGE}`} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hidden sm:block bg-black text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-accent transition-all duration-300"
+            >
+              Free Business Audit
+            </a>
+
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 text-black hover:text-accent transition-colors"
+              aria-label="Toggle Menu"
+            >
+              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
+        </div>
+      </motion.nav>
+
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed top-24 left-1/2 -translate-x-1/2 z-30 w-[90%] max-w-5xl glass rounded-3xl p-8 shadow-2xl md:hidden"
+          >
+            <div className="flex flex-col gap-6 items-center">
+              {navLinks.map((item) => (
+                <Link 
+                  key={item.name} 
+                  to={item.href} 
+                  className={`text-xl uppercase tracking-widest font-bold hover:text-accent transition-colors ${
+                    location.pathname === item.href ? "text-accent" : "text-black"
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              ))}
+              <a 
+                href={`https://wa.me/33644654541?text=${WHATSAPP_MESSAGE}`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-full text-center bg-black text-white py-4 rounded-2xl font-bold hover:bg-accent transition-all"
+              >
+                Free Business Audit
+              </a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 
